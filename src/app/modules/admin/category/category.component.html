@@ -1,0 +1,189 @@
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <div>
+            <h1 class="mt-3">Category List</h1>
+        </div>
+        <div class="my-auto">
+            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                Add Category
+            </a>
+        </div>
+    </div>
+
+    <ng-container *ngIf="isCategoriesVisible && Categories; else noCategories">
+        <div class="card mt-3">
+            <p-table #dt1 [value]="Categories" dataKey="id" [rows]="10" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[5, 10, 25]" [paginator]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [globalFilterFields]="['categoryName', 'createdDate']">
+                <ng-template pTemplate="caption">
+                    <div class="d-flex justify-content-between">
+                        <button pButton label="Clear" class="btn btn-primary" (click)="clear(dt1)"></button>
+                        <span>
+                            <input pInputText type="text" class="form-control"
+                                (input)="applyFilterGlobal($event, 'contains')" placeholder="Search" />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Sr No.
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Category Name
+                                <p-columnFilter type="text" field="categoryName" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Created Date
+                                <p-columnFilter type="text" field="createdDate" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Actions
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-category>
+                    <tr>
+                        <td>{{Categories.indexOf(category) + 1}}</td>
+                        <td>{{category.categoryName}}</td>
+                        <td>{{category.createdDate | date: 'yyyy-MM-dd'}}</td>
+                        <td>
+                            <a class="btn btn-light">
+                                <i class="fas fa-edit" (click)="loadCategory(category)" data-bs-toggle="modal"
+                                    data-bs-target="#editCategoryModal"></i>
+                            </a>
+                            <a class="btn btn-light" (click)="this.selectedCategory = category" data-bs-toggle="modal"
+                                data-bs-target="#viewCategoryModal">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </ng-container>
+    <ng-template #noCategories>
+        <p class="mt-2">
+            You have not created any Categories yet!
+        </p>
+    </ng-template>
+</div>
+
+<!-- Modal For Adding Category -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(false)" [formGroup]="CategoryForm">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label fw-bold">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName"
+                            formControlName="categoryName">
+                        <small class="d-block text-danger"
+                            *ngIf="CategoryForm.get('categoryName')?.invalid && CategoryForm.get('categoryName')?.dirty">
+                            Category Name is Required and should be minimum 3 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label fw-bold">Category Description</label>
+                        <textarea class="form-control" id="categoryDescription" name="categoryDescription"
+                            formControlName="categoryDescription"></textarea>
+                        <small class="d-block text-danger"
+                            *ngIf="CategoryForm.get('categoryDescription')?.invalid && CategoryForm.get('categoryDescription')?.dirty">
+                            Category Description is Required and should be minimum 10 characters long
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2" [disabled]="CategoryForm.invalid"
+                            data-bs-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(false)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Viewing Category Details -->
+<div class="modal fade" id="viewCategoryModal" tabindex="-1" aria-labelledby="viewCategoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="viewCategoryModalLabel">Category Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <span class="fw-bold">Category Name: </span>{{selectedCategory?.categoryName}}
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Category Created On: </span>{{selectedCategory?.createdDate | date:
+                    'yyyy-MM-dd'}}
+                </div>
+                <div class="mb-3">
+                    <p class="fw-bold">Category Description:</p>
+                    <pre style="white-space: pre-wrap;">{{selectedCategory?.categoryDescription}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Editing Category -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(true)" [formGroup]="CategoryForm">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label fw-bold">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName"
+                            formControlName="categoryName">
+                        <small class="d-block text-danger"
+                            *ngIf="CategoryForm.get('categoryName')?.dirty && CategoryForm.get('categoryName')?.invalid">
+                            Category Name is Required and should be minimum 3 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label fw-bold">Category Description</label>
+                        <textarea class="form-control" id="categoryDescription" name="categoryDescription"
+                            formControlName="categoryDescription">
+                            ></textarea>
+                        <small class="d-block text-danger"
+                            *ngIf="CategoryForm.get('categoryDescription')?.invalid && CategoryForm.get('categoryDescription')?.dirty">
+                            Category Description is Required and should be minimum 10 characters long
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2" [disabled]="CategoryForm.invalid"
+                            data-bs-dismiss="modal">Update</button>
+                        <button type="button" class="btn btn-danger me-2" (click)="onDelete(this.selectedCategory?.id)"
+                            data-bs-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(true)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

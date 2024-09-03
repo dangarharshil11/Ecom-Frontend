@@ -1,0 +1,82 @@
+<div class="container">
+    <div class="filter-controls">
+        <input [(ngModel)]="filter.searchText" placeholder="Search..." />
+        <p-dropdown [(ngModel)]="filter.sortByColumn" [options]="['productName','productPrice']"
+            placeholder="SortBy Column"></p-dropdown>
+        <p-dropdown [(ngModel)]="filter.sortOrder" [options]="['Ascending','Descending']"
+            placeholder="Sort Order"></p-dropdown>
+        <button (click)="applyFilter(filter)">Apply Filter</button>
+    </div>
+
+    <div class="product-list">
+        <div class="product-card" *ngFor="let product of products">
+            <img [src]="product.imageRepresentationBase64" alt="{{product.productName}}">
+            <h3>{{ product.productName }}</h3>
+            <p>{{ product.productPrice | currency }}</p>
+            <div class="button-container">
+                <button class="btn-view" (click)="this.selectedProduct = product" data-bs-toggle="modal"
+                    data-bs-target="#viewProductModal">
+                    View Details
+                </button>
+                <button *ngIf="user" class="btn-add-to-cart" (click)="addToCart(product)">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination-controls">
+    <p-dropdown [(ngModel)]="filter.pageSize" [options]="['1','2','5']" placeholder=5
+        (onChange)="applyFilter(filter)"></p-dropdown>
+    <button (click)="loadPreviousPage()" [disabled]="!(filter.page && filter.page > 1)">
+        << </button>
+            <button (click)="loadNextPage()" [disabled]="!hasNextPage">>></button>
+</div>
+
+<!-- Modal For Viewing Product Details -->
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Name: </span>{{selectedProduct?.productName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Category Name: </span>{{selectedProduct?.category?.categoryName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Price: </span>{{selectedProduct?.productPrice |
+                            currency:'USD'}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Brand Name: </span>{{selectedProduct?.productBrandName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Created On: </span>{{selectedProduct?.createdDate | date:
+                            'yyyy-MM-dd'}}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <img [src]="selectedProduct?.imageRepresentationBase64" alt="Uploaded Image"
+                                class="w-100 h-100 border rounded" />
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <p class="fw-bold">Product Description:</p>
+                    <pre style="white-space: pre-wrap;" class="px-3">{{selectedProduct?.productDescription}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

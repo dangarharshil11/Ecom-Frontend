@@ -1,0 +1,289 @@
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <div>
+            <h1 class="mt-3">Products</h1>
+        </div>
+        <div class="my-auto">
+            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                Add Product
+            </a>
+        </div>
+    </div>
+    <ng-container *ngIf="totalRecords > 0; else noProducts">
+        <div class="card mt-3">
+            <p-table #dt1 [value]="this.products" [lazy]="true" (onLazyLoad)="loadProducts($event)"
+                [tableStyle]="{'min-width': '60rem'}" [paginator]="true" [rows]="2" [totalRecords]="totalRecords"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[1, 2, 10, 25, 50]">
+                <ng-template pTemplate="header">
+                    <tr class="text-center">
+                        <th pSortableColumn="ProductName">
+                            Product Name <p-sortIcon field="ProductName"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="CategoryName">
+                            Category Name <p-sortIcon field="CategoryName"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="ProductPrice">
+                            Product Price <p-sortIcon field="ProductPrice"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="ProductBrandName">
+                            Product Brand Name <p-sortIcon field="ProductBrandName"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="CreatedDate">
+                            Created Date <p-sortIcon field="CreatedDate"></p-sortIcon>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Actions
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td class="text-center">{{product.productName}}</td>
+                        <td class="text-center">{{product.category.categoryName}}</td>
+                        <td class="text-center">{{product.productPrice}}</td>
+                        <td class="text-center">{{product.productBrandName}}</td>
+                        <td class="text-center">{{product.createdDate | date: 'yyyy-MM-dd'}}</td>
+                        <td>
+                            <a class="btn btn-light">
+                                <i class="fas fa-edit" (click)="loadProduct(product)" data-bs-toggle="modal"
+                                    data-bs-target="#editProductModal"></i>
+                            </a>
+                            <a class="btn btn-light" (click)="this.selectedProduct = product" data-bs-toggle="modal"
+                                data-bs-target="#viewProductModal">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </ng-container>
+    <ng-template #noProducts>
+        <p class="mt-2">
+            You have not added any Products yet!
+        </p>
+    </ng-template>
+</div>
+
+<!-- Modal For Adding Product -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="productModalLabel">Add Prodcut</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(false)" [formGroup]="ProductForm">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label fw-bold">Product Name</label>
+                        <input type="text" class="form-control" id="productName" name="productName"
+                            formControlName="productName">
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productName')?.invalid && ProductForm.get('productName')?.dirty">
+                            Product Name is Required and should be minimum 3 characters long
+                        </small>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label fw-bold">Product Price</label>
+                                <input type="number" class="form-control" id="productPrice" name="productPrice"
+                                    formControlName="productPrice">
+                                <small class="d-block text-danger"
+                                    *ngIf="ProductForm.get('productPrice')?.invalid && ProductForm.get('productPrice')?.dirty">
+                                    Product Price should be greater than 0
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label d-block fw-bold">Select Category</label>
+                                <p-dropdown formControlName="categoryName" [options]="categories"
+                                    placeholder="Select a Category"></p-dropdown>
+                                <small class="d-block text-danger"
+                                    *ngIf="ProductForm.get('categoryName')?.invalid && (ProductForm.get('categoryName')?.dirty)">
+                                    Select a Category
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productBrandName" class="form-label fw-bold">Product Brand Name</label>
+                        <input type="text" class="form-control" id="productBrandName" name="productBrandName"
+                            formControlName="productBrandName">
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productBrandName')?.invalid && ProductForm.get('productBrandName')?.dirty">
+                            Product Brand Name is required and should be 3 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label fw-bold">Product Description</label>
+                        <textarea class="form-control" id="productDescription" name="productDescription"
+                            formControlName="productDescription"></textarea>
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productDescription')?.invalid && ProductForm.get('productDescription')?.dirty">
+                            Product Description is Required and should be minimum 10 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="UploadImage" class="form-label fw-bold">Upload Product Image</label>
+                        <input type="file" id="UploadImage" name="UploadImage" class="form-control"
+                            (change)="onFileUploadChange($event)">
+                        <small class="d-block text-danger" *ngIf="ProductForm.dirty && !imageFlag">
+                            Upload Product Image
+                        </small>
+                        <div *ngIf="imagePreview" class="mt-2">
+                            <img [src]="imagePreview" alt="Image Preview" class="img-fluid border rounded h-50 w-50"
+                                style="max-height: 200px;">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2"
+                            [disabled]="ProductForm.invalid || !imageFlag" data-bs-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(false)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Viewing Product Details -->
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Name: </span>{{selectedProduct?.productName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Category Name: </span>{{selectedProduct?.category.categoryName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Price: </span>{{selectedProduct?.productPrice |
+                            currency:'USD'}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Brand Name: </span>{{selectedProduct?.productBrandName}}
+                        </div>
+                        <div class="mb-3">
+                            <span class="fw-bold">Product Created On: </span>{{selectedProduct?.createdDate | date:
+                            'yyyy-MM-dd'}}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <img [src]="selectedProduct?.imageRepresentationBase64" alt="Uploaded Image"
+                                class="w-100 h-100 border rounded" />
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <p class="fw-bold">Product Description:</p>
+                    <pre style="white-space: pre-wrap;" class="px-3">{{selectedProduct?.productDescription}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Editing Product -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(true)" [formGroup]="ProductForm">
+                    <div class="mb-3">
+                        <label for="ProductName" class="form-label fw-bold">Product Name</label>
+                        <input type="text" class="form-control" id="ProductName" name="ProductName"
+                            formControlName="productName">
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productName')?.dirty && ProductForm.get('productName')?.invalid">
+                            Product Name is Required and should be minimum 3 characters long
+                        </small>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="ProductPrice" class="form-label fw-bold">Product Price</label>
+                                <input type="number" class="form-control" id="ProductPrice" name="ProductPrice"
+                                    formControlName="productPrice">
+                                <small class="d-block text-danger"
+                                    *ngIf="ProductForm.get('productPrice')?.dirty && ProductForm.get('productPrice')?.invalid">
+                                    Product Price is Required and should be minimum 3 characters long
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label d-block fw-bold">Select Category</label>
+                                <p-dropdown formControlName="categoryName" [options]="categories"
+                                    placeholder="Select a Category"></p-dropdown>
+                                <small class="d-block text-danger"
+                                    *ngIf="ProductForm.get('categoryName')?.invalid && (ProductForm.get('categoryName')?.dirty)">
+                                    Select a Category
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productBrandName" class="form-label fw-bold">Product Brand Name</label>
+                        <input type="text" class="form-control" id="productBrandName" name="productBrandName"
+                            formControlName="productBrandName">
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productBrandName')?.invalid && ProductForm.get('productBrandName')?.dirty">
+                            Product Brand Name is required and should be 3 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label fw-bold">Product Description</label>
+                        <textarea class="form-control" id="productDescription" name="productDescription"
+                            formControlName="productDescription"></textarea>
+                        <small class="d-block text-danger"
+                            *ngIf="ProductForm.get('productDescription')?.invalid && ProductForm.get('productDescription')?.dirty">
+                            Product Description is Required and should be minimum 10 characters long
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="UploadImage" class="form-label fw-bold">Upload Product Image</label>
+                        <input type="file" id="UploadImage" name="UploadImage" class="form-control"
+                            (change)="onFileUploadChange($event)" >
+                        <div *ngIf="imagePreview; else oldImage" class="mt-2">
+                            <img [src]="imagePreview" alt="Image Preview" class="img-fluid border rounded h-50 w-50"
+                                style="max-height: 200px;">
+                        </div>
+                        <ng-template #oldImage>
+                            <div class="mt-2">
+                                <img [src]="Product.imageRepresentationBase64" alt="Image Preview" class="img-fluid border rounded h-50 w-50"
+                                style="max-height: 200px;">
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2" [disabled]="ProductForm.invalid"
+                            data-bs-dismiss="modal">Update</button>
+                        <button type="button" class="btn btn-danger me-2" (click)="onDelete(this.selectedProduct?.id)"
+                            data-bs-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(true)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

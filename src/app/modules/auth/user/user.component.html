@@ -1,0 +1,126 @@
+<div class="container">
+    <div class="profile-header">
+        <h1>User Profile</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+    </div>
+
+    <div class="profile-info">
+        <p data-label="First Name: ">{{ userProfile?.firstName }}</p>
+        <p data-label="Last Name: ">{{ userProfile?.lastName }}</p>
+        <p data-label="Phone Number: ">{{ userProfile?.phoneNumber }}</p>
+        <p data-label="Address: "></p>
+        <pre style="white-space: pre-wrap;">{{ userProfile?.address }}</pre>
+    </div>    
+
+    <div class="btn-group">
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete Account</button>
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-opacity-10 bg-black">
+                    <h5 class="modal-title text-dark" id="editProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="editProfileForm" (ngSubmit)="onSubmitProfile()">
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label fw-bold">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" formControlName="firstName">
+                            <small class="d-block text-danger"
+                                *ngIf="editProfileForm.get('firstName')?.invalid && (editProfileForm.get('firstName')?.dirty || !isProfileFormValid)">
+                                First Name is Required
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label fw-bold">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" formControlName="lastName">
+                            <small class="d-block text-danger"
+                                *ngIf="editProfileForm.get('lastName')?.invalid && (editProfileForm.get('lastName')?.dirty || !isProfileFormValid)">
+                                Last Name is Required
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPhone" class="form-label fw-bold">Phone Number</label>
+                            <input type="text" class="form-control" id="editPhone" formControlName="phoneNumber">
+                            <small class="d-block text-danger"
+                                *ngIf="editProfileForm.get('phoneNumber')?.invalid && (editProfileForm.get('phoneNumber')?.dirty || !isProfileFormValid)">
+                                Phone Number should be of 10 digits
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAddress" class="form-label fw-bold">Address</label>
+                            <textarea class="form-control" id="editAddress" formControlName="address" style="min-height: 180px;"></textarea>
+                            <small class="d-block text-danger"
+                                *ngIf="editProfileForm.get('address')?.invalid && (editProfileForm.get('address')?.dirty || !isProfileFormValid)">
+                                Address is Required
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2" [disabled]="editProfileForm.invalid" data-bs-dismiss="modal">Submit</button>
+                            <button type="button" class="btn btn-secondary" (click)="onResetProfile()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-opacity-10 bg-black">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="changePasswordForm" (ngSubmit)="onSubmitPassword()">
+                        <div class="mb-3">
+                            <label for="oldPassword" class="form-label fw-bold">Old Password</label>
+                            <input type="password" class="form-control" id="oldPassword" formControlName="oldPassword">
+                            <small class="d-block text-danger"
+                                *ngIf="changePasswordForm.get('oldPassword')?.invalid && (changePasswordForm.get('oldPassword')?.dirty || !isPasswordFormValid)">
+                                Old Password is required
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label fw-bold">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" formControlName="newPassword">
+                            <small class="d-block text-danger"
+                                *ngIf="changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || !isPasswordFormValid)">
+                                Password should be at least 7 characters long
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2" [disabled]="changePasswordForm.invalid" data-bs-dismiss="modal">Submit</button>
+                            <button type="button" class="btn btn-secondary" (click)="onResetPassword()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete your Account? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" (click)="onDeleteUser()" data-bs-dismiss="modal">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

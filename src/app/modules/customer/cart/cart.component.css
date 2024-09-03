@@ -1,0 +1,23 @@
+/* cart.component.css */
+.product-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.img-fluid {
+  max-height: 150px;
+  object-fit: cover;
+}
+
+.card-body {
+  background-color: #f8f9fa;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}

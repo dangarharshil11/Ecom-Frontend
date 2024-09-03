@@ -1,0 +1,170 @@
+<!-- cart.component.html -->
+<div class="container mt-4">
+  <!-- No Items Message -->
+  <div *ngIf="cartItems.length === 0" class="text-center">
+    <p class="lead">No items in your cart.</p>
+    <a routerLink="" class="btn btn-primary">Go to Products Page</a>
+  </div>
+
+  <!-- Cart Items -->
+  <div *ngIf="cartItems.length > 0">
+    <div class="row">
+      <!-- Cart Items List -->
+      <div class="col-lg-9 col-md-12">
+        <div *ngFor="let item of cartItems" class="row mb-3 align-items-center border border-dark rounded p-3">
+          <!-- Product Image -->
+          <div class="col-12 col-sm-4 col-md-3 mb-2 mb-md-0 border rounded">
+            <img [src]="item.product?.imageRepresentationBase64" alt="{{ item.product?.productName }}"
+              class="img-fluid rounded">
+          </div>
+
+          <!-- Product Details -->
+          <div class="col-12 col-sm-8 col-md-5 mb-2 mb-md-0 text-center">
+            <h5 class="product-name">{{ item.product?.productName }}
+              <i class="fa fa-thin fa-eye" (click)="this.selectedProduct = item.product" data-bs-toggle="modal"
+                data-bs-target="#viewProductModal"></i>
+            </h5>
+            <p class="mb-1">Unit Price: {{ item.product?.productPrice | currency: 'USD' }}</p>
+            <p class="mb-1">Category: {{ item.product?.category?.categoryName }}</p>
+          </div>
+
+          <div class="col-12 col-md-2 mb-2 mb-md-0 text-center">
+            <p class="mb-1">Quantity: {{ item.productCount }}</p>
+            <p>Total Price: {{ ((item.product?.productPrice ?? 0) * item.productCount) | currency: 'USD' }}</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12 col-md-2 d-flex flex-column align-items-center">
+            <!-- Increment and Decrement Buttons -->
+            <div class="d-flex justify-content-between mb-2">
+              <button (click)="decrementQuantity(item)" [disabled]="item.productCount == 1"
+                class="btn btn-secondary btn-sm me-2 py-1 px-3">-</button>
+              <button (click)="incrementQuantity(item)" class="btn btn-secondary btn-sm py-1 px-3">+</button>
+            </div>
+            <!-- Delete Button -->
+            <button (click)="deleteCartItem(item.id)" class="btn btn-danger btn-sm d-flex align-items-center px-4 py-2">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="col-lg-3 col-md-12 mt-4 mt-lg-0">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">Cart Summary</h5>
+            <p><span class="fw-bold">Total Quantity: </span>{{ totalQuantity }}</p>
+            <p><span class="fw-bold">Order Total: </span>{{ cartTotal | currency: 'USD' }}</p>
+            <div class="row">
+              <div class="col-6">
+                <button (click)="clearCart()" class="btn btn-danger">Empty Cart</button>
+              </div>
+              <div class="col-6">
+                <button class="btn btn-success" data-bs-toggle="modal"
+                  data-bs-target="#viewOrderModal">Place Order</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Viewing Product Details -->
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-opacity-10 bg-black">
+        <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+          <div class="col-8">
+            <div class="mb-3">
+              <span class="fw-bold">Product Name: </span>{{selectedProduct?.productName}}
+            </div>
+            <div class="mb-3">
+              <span class="fw-bold">Category Name: </span>{{selectedProduct?.category?.categoryName}}
+            </div>
+            <div class="mb-3">
+              <span class="fw-bold">Product Price: </span>{{selectedProduct?.productPrice |
+              currency:'USD'}}
+            </div>
+            <div class="mb-3">
+              <span class="fw-bold">Product Brand Name: </span>{{selectedProduct?.productBrandName}}
+            </div>
+            <div class="mb-3">
+              <span class="fw-bold">Product Created On: </span>{{selectedProduct?.createdDate | date:
+              'yyyy-MM-dd'}}
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mb-3">
+              <img [src]="selectedProduct?.imageRepresentationBase64" alt="Uploaded Image"
+                class="w-100 h-100 border rounded" />
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <p class="fw-bold">Product Description:</p>
+          <pre style="white-space: pre-wrap;" class="px-3">{{selectedProduct?.productDescription}}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Viewing Order -->
+<div class="modal fade" id="viewOrderModal" tabindex="-1" aria-labelledby="viewOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-opacity-10 bg-black">
+        <h5 class="modal-title" id="viewOrderModalLabel">Order Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Order Information -->
+        <div class="border border-dark rounded px-2 pt-2 pb-0">
+          <h6 class="fw-bold mt-1">Order Summary</h6>
+          <hr>
+          <div *ngFor="let item of cartItems" class="row align-items-center">
+            <!-- Order Details -->
+            <div class="col-12">
+              <!-- Product Details-->
+              <span class="fw-bold">{{ item.product?.productName }}:</span>
+              {{ item.product?.productPrice | currency: 'USD' }} x {{ item.productCount }} =
+              {{ ((item.product?.productPrice ?? 0) * item.productCount) | currency: 'USD' }}
+            </div>
+          </div>
+          <hr>
+          <div class="mb-3 row">
+            <div class="col-8">
+              <p class="m-0"><span class="fw-bold">Total Quantity: </span>{{ totalQuantity }}</p>
+              <p class="m-0"><span class="fw-bold">Order Total: </span>{{ cartTotal | currency: 'USD' }}</p>
+            </div>
+            <div class="col-4">
+              <button class="btn btn-success" (click)="createOrder()">Confirm & Pay</button>
+            </div>
+          </div>
+        </div>
+        <!-- User Information -->
+        <div class="border border-dark rounded p-2 mt-2">
+          <h6 class="fw-bold mt-1">User Information</h6>
+          <hr>
+          <p class="m-0"><span class="fw-bold">Name:</span> {{ user?.firstName }} {{ user?.lastName }}</p>
+          <p class="m-0"><span class="fw-bold">Email:</span> {{ user?.email }}</p>
+          <p class="m-0"><span class="fw-bold">Phone Number:</span> {{ user?.phoneNumber }}</p>
+          <p class="m-0"><span class="fw-bold">Shipping Address:</span> </p>
+          <pre style="white-space: pre-wrap;">{{ user?.address }}</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

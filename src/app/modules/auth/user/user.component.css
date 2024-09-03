@@ -1,0 +1,113 @@
+/* General Body Styling */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Container Styling */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Header Styling */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Profile Info Styling */
+.profile-info {
+    background-color: #f1f3f5;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.profile-info p {
+    margin: 8px 0;
+    font-size: 16px; /* Adjust font size as needed */
+}
+
+.profile-info p span {
+    font-weight: normal; /* Normal weight for values */
+    color: #212529; /* Default text color */
+}
+
+.profile-info p::before {
+    content: attr(data-label);
+    font-weight: bold; /* Bold weight for labels */
+    color: #495057; /* Darker color for labels */
+}
+
+
+/* Button Group Styling */
+.btn-group {
+    margin-top: 20px;
+}
+
+.btn-group .btn {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff; /* Blue */
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Red */
+}
+
+.btn-warning {
+    background-color: #ffc107; /* Yellow */
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Grey */
+}
+
+/* Modal Header Styling */
+#editProfileModal .modal-header {
+    background-color: #007bff; /* Blue */
+    color: #ffffff; /* White text */
+}
+
+#changePasswordModal .modal-header {
+    background-color: #ffc107; /* Yellow */
+    color: #000000; /* Black text */
+}
+
+#deleteConfirmationModal .modal-header {
+    background-color: #dc3545; /* Red */
+    color: #ffffff; /* White text */
+}
+
+/* Modal Content Styling */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* Button Styling */
+.btn {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+

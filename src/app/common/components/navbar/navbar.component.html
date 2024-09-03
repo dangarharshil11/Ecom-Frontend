@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container">
+    <a class="navbar-brand" href="#">Ecom</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <ng-container *ngIf="user !== undefined && user?.roles?.includes('Admin')">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Manage
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" [routerLink]="['/admin/product']">Manage Products</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/admin/category']">Manage Categories</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/admin/inventory']">Manage Inventory</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" [routerLink]="['/admin/user']">Manage Users</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" [routerLink]="['/admin/orders']">Manage Orders</a></li>
+            </ul>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="user !== undefined && user?.roles?.includes('Customer')">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Manage
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" [routerLink]="['/customer/cart']">Manage Cart</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/customer/orders']">Your Orders</a></li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+      <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+        <ng-container *ngIf="user == undefined; else showProfile">
+          <a [routerLink]="['/auth/login']" class="btn btn-light border me-2">Login</a>
+          <a [routerLink]="['/auth/register']" class="btn btn-primary">Register</a>
+        </ng-container>
+        <ng-template #showProfile>
+          <div class="d-flex align-items-center">
+            <ng-container *ngIf="user !== undefined">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <span>{{user.email}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" [routerLink]="['/auth/user']">Manage Profile</a></li>
+                </ul>
+              </li>
+                <button class="btn btn-primary ms-3" (click)="onLogout()">Logout</button>
+            </ng-container>
+          </div>
+        </ng-template>
+      </ul>
+    </div>
+  </div>
+</nav>

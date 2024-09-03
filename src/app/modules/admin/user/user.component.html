@@ -1,0 +1,338 @@
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <div>
+            <h1 class="mt-3">User List</h1>
+        </div>
+        <div class="my-auto">
+            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
+                Add User
+            </a>
+        </div>
+    </div>
+
+    <ng-container *ngIf="isUsersVisible && Users; else noUsers">
+        <div class="card mt-3">
+            <p-table #dt1 [value]="Users" dataKey="id" [rows]="10" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[5, 10, 25]" [paginator]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [globalFilterFields]="['firstName', 'lastName', 'email', 'role']">
+                <ng-template pTemplate="caption">
+                    <div class="d-flex justify-content-between">
+                        <button pButton label="Clear" class="btn btn-primary" (click)="clear(dt1)"></button>
+                        <span>
+                            <input pInputText type="text" class="form-control"
+                                (input)="applyFilterGlobal($event, 'contains')" placeholder="Search" />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                First Name
+                                <p-columnFilter type="text" field="firstName" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Last Name
+                                <p-columnFilter type="text" field="lastName" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Email
+                                <p-columnFilter type="text" field="email" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="d-flex align-items-center">
+                                Actions
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user>
+                    <tr>
+                        <td>{{user.firstName}}</td>
+                        <td>{{user.lastName}}</td>
+                        <td>{{user.email}}</td>
+                        <td>
+                            <a class="btn btn-light">
+                                <i class="fas fa-edit" (click)="loadUser(user)" data-bs-toggle="modal"
+                                    data-bs-target="#editUserModal"></i>
+                            </a>
+                            <a class="btn btn-light" (click)="this.selectedUser = user" data-bs-toggle="modal"
+                                data-bs-target="#viewUserModal">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </ng-container>
+    <ng-template #noUsers>
+        <p class="mt-2">
+            There are No Users!
+        </p>
+    </ng-template>
+</div>
+
+<!-- Modal For Adding User -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="userModalLabel">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(false)" [formGroup]="UserForm">
+                    <div class="mt-3">
+                        <label for="firstName" class="form-label">First Name *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="firstName" 
+                            name="firstName" 
+                            class="w-100"
+                            placeholder="Enter Your FirstName"
+                            formControlName="firstName" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('firstName')?.invalid && (UserForm.get('firstName')?.dirty || !isValid)">
+                                First Name is Required
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="lastName" class="form-label">Last Name *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="lastName" 
+                            name="lastName" 
+                            class="w-100"
+                            placeholder="Enter Your Last Name"
+                            formControlName="lastName" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('lastName')?.invalid && (UserForm.get('lastName')?.dirty || !isValid)">
+                                Last Name is Required
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input 
+                            pInputText
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="w-100"
+                            placeholder="Enter Your Email Address"
+                            formControlName="email" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('email')?.invalid && (UserForm.get('email')?.dirty || !isValid)">
+                                Valid Email Address is Required
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="phoneNumber" class="form-label">Phone Number *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="phoneNumber" 
+                            name="phoneNumber" 
+                            class="w-100"
+                            placeholder="Enter Your Phone Number"
+                            formControlName="phoneNumber" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('phoneNumber')?.invalid && (UserForm.get('phoneNumber')?.dirty || !isValid)">
+                                Phone Number should be of 10 digit
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="address" class="form-label">Address *</label>
+                        <textarea 
+                            pInputTextarea
+                            type="text" 
+                            id="address" 
+                            name="address" 
+                            style="height: 180px; max-height: 180px;" 
+                            class="form-control w-100"
+                            placeholder="Enter Your Address"
+                            formControlName="address">
+                        </textarea>
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('address')?.invalid && (UserForm.get('address')?.dirty || !isValid)">
+                                Address is Required and can not be more than 100 charcaters
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input 
+                            pInputText
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="w-100"
+                            placeholder="Enter Your Password"
+                            formControlName="password" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="UserForm.get('password')?.invalid && (UserForm.get('password')?.dirty || !isValid)">
+                            Password should be atleast 7 chracters long
+                        </small>
+                    </div>    
+
+                    <div class="mb-3">
+                        <label class="form-label d-block fw-bold">Select Role</label>
+                        <p-dropdown formControlName="role" [options]="roles"
+                            placeholder="Select a Role"></p-dropdown>
+                        <small class="d-block text-danger"
+                            *ngIf="UserForm.get('role')?.invalid && (UserForm.get('role')?.dirty) || !isValid">
+                            Select a Role
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2" [disabled]="UserForm.invalid"
+                            data-bs-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(false)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Viewing User Details -->
+<div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="viewUserModalLabel">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <span class="fw-bold">First Name: </span>{{selectedUser?.firstName}}
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Last Name: </span>{{selectedUser?.lastName}}
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Email: </span>{{selectedUser?.email}}
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Phone Number: </span>{{selectedUser?.phoneNumber}}
+                </div>
+                <div class="mb-3">
+                    <p class="fw-bold">Address:</p>
+                    <pre style="white-space: pre-wrap;">{{selectedUser?.address}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Editing User -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-opacity-10 bg-black">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(true)" [formGroup]="EditUserForm">
+                    <div class="mt-3">
+                        <label for="firstName" class="form-label">First Name *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="efirstName" 
+                            name="firstName" 
+                            class="w-100"
+                            placeholder="Enter Your FirstName"
+                            formControlName="firstName" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="EditUserForm.get('firstName')?.invalid && (EditUserForm.get('firstName')?.dirty)">
+                                First Name is Required
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="lastName" class="form-label">Last Name *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="elastName" 
+                            name="lastName" 
+                            class="w-100"
+                            placeholder="Enter Your Last Name"
+                            formControlName="lastName" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="EditUserForm.get('lastName')?.invalid && (EditUserForm.get('lastName')?.dirty)">
+                                Last Name is Required
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="phoneNumber" class="form-label">Phone Number *</label>
+                        <input 
+                            pInputText
+                            type="text" 
+                            id="ephoneNumber" 
+                            name="phoneNumber" 
+                            class="w-100"
+                            placeholder="Enter Your Phone Number"
+                            formControlName="phoneNumber" />
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="EditUserForm.get('phoneNumber')?.invalid && (EditUserForm.get('phoneNumber')?.dirty)">
+                                Phone Number should be of 10 digit
+                        </small>
+                    </div>
+    
+                    <div class="mt-3">
+                        <label for="address" class="form-label">Address *</label>
+                        <textarea 
+                            pInputTextarea
+                            type="text" 
+                            id="address" 
+                            name="address" 
+                            class="form-control"
+                            formControlName="address">
+                        </textarea>
+                        <small 
+                            class="d-block text-danger" 
+                            *ngIf="EditUserForm.get('address')?.invalid && (EditUserForm.get('address')?.dirty)">
+                                Address is Required and can not be more than 100 charcaters
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-primary me-2" [disabled]="EditUserForm.invalid"
+                            data-bs-dismiss="modal">Update</button>
+                        <button type="button" class="btn btn-danger me-2" (click)="onDelete(this.selectedUser?.id)"
+                            data-bs-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-secondary" (click)="onReset(true)">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
